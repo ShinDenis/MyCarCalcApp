@@ -5,32 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Калькулятор авто</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      overflow-x: hidden;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--tg-theme-bg-color, #fff);
       color: var(--tg-theme-text-color, #000);
-      padding: 16px;
-      min-height: 100vh;
+      padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
     }
 
     h1 {
-      font-size: 20px;
-      font-weight: 600;
+      font-size: 22px;
+      font-weight: 700;
       margin-bottom: 4px;
     }
 
     .subtitle {
       font-size: 13px;
       color: var(--tg-theme-hint-color, #888);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     label {
       display: block;
       font-size: 13px;
+      font-weight: 500;
       color: var(--tg-theme-hint-color, #888);
       margin-bottom: 5px;
     }
@@ -38,14 +50,15 @@
     input {
       width: 100%;
       padding: 12px 14px;
-      border: 1.5px solid var(--tg-theme-hint-color, #ddd);
+      border: 1.5px solid rgba(0,0,0,0.12);
       border-radius: 10px;
       font-size: 15px;
       background: var(--tg-theme-secondary-bg-color, #f5f5f5);
       color: var(--tg-theme-text-color, #000);
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       outline: none;
       transition: border-color 0.2s;
+      -webkit-appearance: none;
     }
 
     input:focus {
@@ -67,6 +80,14 @@
 
     button#calcBtn:active { opacity: 0.8; }
     button#calcBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .error-msg {
+      color: #e24b4a;
+      font-size: 13px;
+      margin-top: -10px;
+      margin-bottom: 12px;
+      display: none;
+    }
 
     .result-card {
       margin-top: 20px;
@@ -91,22 +112,17 @@
       border-bottom: 0.5px solid rgba(0,0,0,0.07);
     }
 
-    .result-row:last-child { border-bottom: none; }
+    .result-row:last-of-type { border-bottom: none; }
 
-    .result-row .label {
-      color: var(--tg-theme-hint-color, #888);
-    }
-
-    .result-row .value {
-      font-weight: 500;
-    }
+    .result-row .label { color: var(--tg-theme-hint-color, #888); }
+    .result-row .value { font-weight: 500; }
 
     .result-total {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 12px 0 4px;
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
       margin-top: 6px;
       border-top: 1.5px solid rgba(0,0,0,0.1);
@@ -116,24 +132,29 @@
       color: var(--tg-theme-button-color, #3478f6);
     }
 
-    .error-msg {
-      color: #e24b4a;
-      font-size: 13px;
-      margin-top: -8px;
-      margin-bottom: 10px;
+    .ai-block {
       display: none;
+      margin-top: 16px;
+      padding: 14px;
+      background: var(--tg-theme-bg-color, #fff);
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.07);
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: var(--tg-theme-text-color, #000);
     }
 
     .loader {
       display: inline-block;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border: 2px solid rgba(255,255,255,0.4);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       vertical-align: middle;
-      margin-right: 6px;
+      margin-right: 8px;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -142,7 +163,7 @@
 <body>
 
   <h1>🚗 Калькулятор авто</h1>
-  <p class="subtitle">Рассчитайте полную стоимость с таможней и доставкой</p>
+  <p class="subtitle">Полная стоимость с таможней и доставкой</p>
 
   <label for="model">Модель автомобиля</label>
   <input type="text" id="model" placeholder="Например: Audi A5" autocomplete="off" />
@@ -158,7 +179,7 @@
     <p class="result-title" id="resultTitle">Расчёт</p>
 
     <div class="result-row">
-      <span class="label">Цена авто</span>
+      <span class="label">💰 Цена авто</span>
       <span class="value" id="rPrice">—</span>
     </div>
     <div class="result-row">
@@ -178,15 +199,16 @@
       <span>Итого</span>
       <span class="value" id="rTotal">—</span>
     </div>
+
+    <div class="ai-block" id="aiText"></div>
   </div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-
     function fmt(n) {
-      return '$' + Number(n).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return '$' + Number(n).toLocaleString('ru-RU', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
 
     function showError(msg) {
@@ -201,6 +223,7 @@
 
     async function calculate() {
       hideError();
+
       const model = document.getElementById('model').value.trim();
       const priceRaw = document.getElementById('price').value.trim();
 
@@ -208,25 +231,49 @@
       if (!priceRaw) { showError('Введите цену'); return; }
 
       const price = parseFloat(priceRaw);
-      if (isNaN(price) || price <= 0) { showError('Цена должна быть положительным числом'); return; }
+      if (isNaN(price) || price <= 0) {
+        showError('Цена должна быть положительным числом');
+        return;
+      }
 
       const btn = document.getElementById('calcBtn');
       btn.disabled = true;
       btn.innerHTML = '<span class="loader"></span>Считаем...';
 
+      // Скрываем старый AI текст пока считаем
+      document.getElementById('aiText').style.display = 'none';
+
       try {
-        const res = await fetch(`/calc/${price}`);
+        const res = await fetch('/calc-ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model, price })
+        });
+
         if (!res.ok) throw new Error('Ошибка сервера');
         const data = await res.json();
 
+        if (data.error) {
+          showError(data.error);
+          return;
+        }
+
+        // Заполняем таблицу
         document.getElementById('resultTitle').textContent = `Расчёт для ${model}`;
         document.getElementById('rPrice').textContent = fmt(data.price);
         document.getElementById('rCustoms').textContent = fmt(data.customs);
         document.getElementById('rLogistics').textContent = fmt(data.logistics);
         document.getElementById('rCommission').textContent = fmt(data.commission);
         document.getElementById('rTotal').textContent = fmt(data.total);
-
         document.getElementById('resultCard').style.display = 'block';
+
+        // Показываем AI текст если есть
+        const aiBlock = document.getElementById('aiText');
+        if (data.ai_text) {
+          aiBlock.textContent = data.ai_text;
+          aiBlock.style.display = 'block';
+        }
+
         document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
 
       } catch (e) {
