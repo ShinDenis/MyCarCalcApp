@@ -198,7 +198,6 @@ async def api_calc_ai(req: CalcRequest):
                 "customs": round(customs, 2),
                 "logistics": round(logistics, 2),
                 "commission": round(commission, 2),
-                "total": round(total, 2),
                 "ai_text": response.text
             }
         except Exception as e:
