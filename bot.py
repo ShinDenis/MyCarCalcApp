@@ -179,10 +179,11 @@ async def api_calc_ai(req: CalcRequest):
         f"- Цена авто: {req.price:.2f} USD\n"
         f"- Таможня (15%): {customs:.2f} USD\n"
         f"- Логистика: {logistics:.2f} USD\n"
-        f"- Комиссия (5%): {commission:.2f} USD\n\n"
+        f"- Комиссия (5%): {commission:.2f} USD\n"
+        f"- Итого: {total:.2f} USD\n\n"
         f"Напиши дружелюбный ответ на русском языке с эмодзи. "
-        f"ОБЯЗАТЕЛЬНО включи все 4 строки расчёта в ответ в том же порядке: "
-        f"цена авто, таможня, логистика, комиссия. "
+        f"ОБЯЗАТЕЛЬНО включи все 5 строк расчёта в ответ в том же порядке: "
+        f"цена авто, таможня, логистика, комиссия, итого. "
         f"Не сокращай и не объединяй строки расчёта."
     )
 
@@ -198,6 +199,7 @@ async def api_calc_ai(req: CalcRequest):
                 "customs": round(customs, 2),
                 "logistics": round(logistics, 2),
                 "commission": round(commission, 2),
+                "total": round(total, 2),
                 "ai_text": response.text
             }
         except Exception as e:
