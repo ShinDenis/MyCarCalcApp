@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: korea-auto-calc-bot
+    env: python
+    plan: free
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "python bot.py"
+    pythonVersion: "3.10.14"
+    envVars:
+      - key: API_TOKEN
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: RENDER_EXTERNAL_URL
+        sync: false
