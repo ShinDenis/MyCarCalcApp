@@ -4,6 +4,7 @@ import logging
 from threading import Thread
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 import uvicorn
 import httpx
 from aiogram import Bot, Dispatcher, types, F
@@ -125,7 +126,7 @@ async def cb_help(call: CallbackQuery):
     )
     await call.answer()
 
-# --- Текстовые сообщения (fallback) ---
+# --- Fallback ---
 @dp.message()
 async def fallback(message: types.Message):
     await message.answer(
@@ -141,8 +142,12 @@ async def set_commands(bot: Bot):
     ]
     await bot.set_my_commands(commands)
 
-# --- REST API + статика ---
+# --- REST API ---
 app = FastAPI()
+
+class CalcRequest(BaseModel):
+    model: str
+    price: float
 
 @app.get("/")
 def home():
@@ -161,7 +166,64 @@ def api_calc(price: float):
         "total": round(total, 2)
     }
 
-# Раздаём папку webapp как статику
+@app.post("/calc-ai")
+async def api_calc_ai(req: CalcRequest):
+    if req.price <= 0:
+        return {"error": "Цена должна быть положительной"}
+
+    customs, logistics, commission, total = calc_total(req.price)
+
+    prompt = (
+        f"Пользователь хочет купить автомобиль: {req.model}, цена {req.price:.2f} USD.\n\n"
+        f"Расчёт итоговой стоимости:\n"
+        f"- Цена авто: {req.price:.2f} USD\n"
+        f"- Таможня (15%): {customs:.2f} USD\n"
+        f"- Логистика: {logistics:.2f} USD\n"
+        f"- Комиссия (5%): {commission:.2f} USD\n"
+        f"- Итого: {total:.2f} USD\n\n"
+        f"Напиши дружелюбный ответ на русском языке с эмодзи. "
+        f"ОБЯЗАТЕЛЬНО включи все 5 строк расчёта в ответ в том же порядке: "
+        f"цена авто, таможня, логистика, комиссия, итого. "
+        f"Не сокращай и не объединяй строки расчёта."
+    )
+
+    MAX_RETRIES = 3
+    for attempt in range(MAX_RETRIES):
+        try:
+            response = client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=[{"role": "user", "parts": [{"text": prompt}]}]
+            )
+            return {
+                "price": round(req.price, 2),
+                "customs": round(customs, 2),
+                "logistics": round(logistics, 2),
+                "commission": round(commission, 2),
+                "total": round(total, 2),
+                "ai_text": response.text
+            }
+        except Exception as e:
+            error_str = str(e)
+            is_503 = "503" in error_str or "UNAVAILABLE" in error_str
+            is_429 = "429" in error_str or "RESOURCE_EXHAUSTED" in error_str
+            if (is_503 or is_429) and attempt < MAX_RETRIES - 1:
+                logger.warning(f"Gemini retry {attempt+1}...")
+                await asyncio.sleep((attempt + 1) * 5)
+                continue
+            logger.warning(f"Gemini недоступен: {e}")
+            break
+
+    # Fallback без AI
+    return {
+        "price": round(req.price, 2),
+        "customs": round(customs, 2),
+        "logistics": round(logistics, 2),
+        "commission": round(commission, 2),
+        "total": round(total, 2),
+        "ai_text": None
+    }
+
+# Статика — папка webapp
 app.mount("/webapp", StaticFiles(directory="webapp", html=True), name="webapp")
 
 def run_api():
