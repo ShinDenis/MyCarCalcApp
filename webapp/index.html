@@ -270,7 +270,7 @@
 
     /* Карточка результата */
     .result-card {
-      background: linear-gradient(145deg, #111118, #0d0d15);
+      background: linear-gradient(145deg, #121212, #111617);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 18px;
       padding: 20px;
@@ -375,7 +375,7 @@
 
     .specialist-link {
       display: block;
-      margin: 10px auto 0;
+      margin: 3px;
       color: #00bfff;
       text-decoration: none;
       font-weight: 600;
@@ -537,7 +537,6 @@
         const aiBlock = document.getElementById('aiText');
         if (data.ai_text) {
           aiBlock.innerHTML = data.ai_text.replace(/\n/g, '<br>') + `
-            <br><br>
             <a href="https://t.me/crazymixparty" target="_blank" class="specialist-link">
               ✉️ Связаться со специалистом
             </a>
