@@ -369,6 +369,23 @@
       margin: 20px auto 0;
       box-shadow: 0 0 8px rgba(0,191,255,0.5);
     }
+
+    .specialist-link {
+      display: inline-block;
+      margin-top: 4px;
+      color: #00bfff;
+      text-decoration: none;
+      font-weight: 600;
+      font-style: normal;
+      text-shadow: 0 0 8px rgba(0,191,255,0.4);
+    }
+    .specialist-link:active {
+      opacity: 0.7;
+    }
+
+.specialist-link:active {
+  opacity: 0.7;
+}
   </style>
 </head>
 <body>
@@ -518,7 +535,12 @@
 
         const aiBlock = document.getElementById('aiText');
         if (data.ai_text) {
-          aiBlock.textContent = data.ai_text;
+          aiBlock.innerHTML = data.ai_text.replace(/\n/g, '<br>') + `
+            <br><br>
+            <a href="https://t.me/crazymixparty" target="_blank" class="specialist-link">
+              ✉️ Связаться со специалистом
+            </a>
+          `;
           aiBlock.style.display = 'block';
         }
 
