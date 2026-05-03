@@ -38,7 +38,7 @@ dp = Dispatcher()
 
 # --- Настройка Gemini ---
 client = genai.Client(api_key=GEMINI_API_KEY)
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-2.5-flash-lite"
 
 # --- Логика калькулятора ---
 def calc_total(price: float):
