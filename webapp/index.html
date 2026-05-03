@@ -9,8 +9,12 @@
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
+
+    if (tg.platform === 'android' || tg.platform === 'ios') {
     tg.expand();
     tg.requestFullscreen();
+    }
+      
   </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
