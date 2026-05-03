@@ -27,7 +27,6 @@ API_TOKEN = os.environ.get("API_TOKEN")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:8000")
 WEBAPP_URL = f"{RENDER_EXTERNAL_URL}/webapp/"
-SPECIALIST_URL = "https://t.me/crazymixparty"
 
 if not API_TOKEN:
     raise RuntimeError("Переменная окружения API_TOKEN не задана!")
@@ -180,7 +179,7 @@ async def api_calc_ai(req: CalcRequest):
         f"Напиши короткий (2-3 предложения) дружелюбный комментарий на русском языке с эмодзи. "
         f"Только эмоции и впечатления об автомобиле. "
         f"Без цифр, без расчётов, без списков — только живой текст."
-        f"Обязательно предложи помощь специалиста, ссылка будет ниже"
+        f"Обязательно предложи помощь специалиста."
     )
 
     MAX_RETRIES = 3
