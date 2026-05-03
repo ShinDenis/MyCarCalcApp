@@ -375,7 +375,7 @@
 
     .specialist-link {
       display: block;
-      margin: 5px;
+      margin: 3px;
       color: #00bfff;
       text-decoration: none;
       font-weight: 600;
@@ -535,10 +535,9 @@
         document.getElementById('resultCard').style.display = 'block';
 
         const aiBlock = document.getElementById('aiText');
-
         if (data.ai_text) {
-          aiBlock.innerHTML = `
-            <div>${data.ai_text.replace(/\n/g, '<br>')}</div>
+          aiBlock.innerHTML = data.ai_text.replace(/\n/g, '<br>') + `
+            <br><br>
             <a href="https://t.me/crazymixparty" target="_blank" class="specialist-link">
               ✉️ Связаться со специалистом
             </a>
