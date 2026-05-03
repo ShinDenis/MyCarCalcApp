@@ -22,135 +22,334 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--tg-theme-bg-color, #fff);
-      color: var(--tg-theme-text-color, #000);
-      padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+      background: #0a0a0f;
+      color: #e0e0e0;
     }
 
-    h1 {
-      font-size: 22px;
+    /* ===== ЗАСТАВКА ===== */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      overflow: hidden;
+      transition: opacity 0.7s ease;
+    }
+
+    #splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .splash-gif {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .splash-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 20%,
+        rgba(0,0,0,0.4) 60%,
+        rgba(0,0,0,0.92) 100%
+      );
+    }
+
+    .splash-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 0 24px 52px;
+      animation: fadeUp 0.9s ease 0.4s both;
+    }
+
+    .splash-title {
+      font-size: 30px;
       font-weight: 700;
-      margin-bottom: 4px;
+      color: #fff;
+      letter-spacing: 1px;
+      text-shadow: 0 0 20px rgba(100,200,255,0.6);
+      margin-bottom: 6px;
     }
 
-    .subtitle {
+    .splash-subtitle {
       font-size: 13px;
-      color: var(--tg-theme-hint-color, #888);
-      margin-bottom: 24px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .splash-bar-wrap {
+      width: 140px;
+      height: 2px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .splash-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ffffff, #feffc9);
+      border-radius: 4px;
+      animation: loadBar 2s ease 0.5s forwards;
+      box-shadow: 0 0 8px #ffffff;
+    }
+
+    @keyframes loadBar {
+      0%   { width: 0%; }
+      70%  { width: 80%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+    #app {
+      min-height: 100vh;
+      padding: 24px 16px calc(32px + env(safe-area-inset-bottom));
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      background:
+        radial-gradient(ellipse at top left, rgba(28, 31, 30, 1) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom right, rgba(225, 235, 234, 0.07) 0%, transparent 60%),
+        #0A0A0A;
+    }
+
+    #app.visible { opacity: 1; }
+
+    /* Шапка */
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .app-header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #142224 70%, #031314 100%);
+      border: 1px solid rgba(0,191,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow:
+      0 0 20px rgba(0,191,255,0.1),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .app-header-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .app-header-text p {
+      font-size: 12px;
+      color: #555;
+      letter-spacing: 0.5px;
+    }
+
+    /* Карточка формы */
+    .card {
+      background: linear-gradient(145deg, #121212, #111617);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow:
+        0 4px 24px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
     label {
       display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--tg-theme-hint-color, #888);
-      margin-bottom: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #c7c7c7;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
     input {
       width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid rgba(0,0,0,0.12);
-      border-radius: 10px;
+      padding: 13px 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
       font-size: 15px;
-      background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-      color: var(--tg-theme-text-color, #000);
-      margin-bottom: 16px;
+      background: rgba(255,255,255,0.04);
+      color: #e0e0e0;
+      margin-bottom: 18px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
       -webkit-appearance: none;
+      caret-color: #00bfff;
     }
+
+    input::placeholder { color: #444; }
 
     input:focus {
-      border-color: var(--tg-theme-button-color, #3478f6);
+      border-color: rgba(0,191,255,0.4);
+      box-shadow: 0 0 0 3px rgba(0,191,255,0.08), 0 0 16px rgba(0,191,255,0.1);
     }
 
+    input:last-of-type { margin-bottom: 0; }
+
+    /* Кнопка */
     button#calcBtn {
       width: 100%;
-      padding: 14px;
-      background: var(--tg-theme-button-color, #3478f6);
-      color: var(--tg-theme-button-text-color, #fff);
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      padding: 15px;
+      background: linear-gradient(135deg, #13191a 0%, #142224 70%, #031314 100%);
+      color: #e0e0e0;
+      border: 1px solid rgba(0,191,255,0.3);
+      border-radius: 14px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.2s;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      box-shadow:
+        0 0 20px rgba(0,191,255,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+      margin-top: 16px;
     }
 
-    button#calcBtn:active { opacity: 0.8; }
-    button#calcBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+    button#calcBtn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,191,255,0.6), transparent);
+    }
 
+    button#calcBtn:active {
+      transform: scale(0.98);
+      box-shadow: 0 0 30px rgba(0,191,255,0.2);
+    }
+
+    button#calcBtn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Ошибка */
     .error-msg {
-      color: #e24b4a;
-      font-size: 13px;
-      margin-top: -10px;
-      margin-bottom: 12px;
+      color: #ff4466;
+      font-size: 12px;
+      margin-top: 10px;
       display: none;
+      text-shadow: 0 0 8px rgba(255,68,102,0.4);
     }
 
+    /* Карточка результата */
     .result-card {
-      margin-top: 20px;
-      background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-      border-radius: 14px;
-      padding: 16px;
+      background: linear-gradient(145deg, #111118, #0d0d15);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 20px;
       display: none;
+      box-shadow:
+        0 4px 24px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,191,255,0.4), rgba(123,47,255,0.4), transparent);
     }
 
     .result-title {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 600;
-      margin-bottom: 12px;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
     }
 
     .result-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 7px 0;
+      padding: 10px 0;
       font-size: 14px;
-      border-bottom: 0.5px solid rgba(0,0,0,0.07);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
 
     .result-row:last-of-type { border-bottom: none; }
 
-    .result-row .label { color: var(--tg-theme-hint-color, #888); }
-    .result-row .value { font-weight: 500; }
+    .result-row .label { color: #555; }
+
+    .result-row .value {
+      font-weight: 500;
+      color: #ccc;
+    }
 
     .result-total {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0 4px;
-      font-size: 18px;
+      padding: 14px 0 2px;
+      font-size: 20px;
       font-weight: 700;
-      margin-top: 6px;
-      border-top: 1.5px solid rgba(0,0,0,0.1);
+      margin-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
 
-    .result-total .value {
-      color: var(--tg-theme-button-color, #3478f6);
+    .result-total .label-total { color: #888; }
+
+    .result-total .value-total {
+      color: #00bfff;
+      text-shadow: 0 0 16px rgba(0,191,255,0.5);
     }
 
+    /* AI блок */
     .ai-block {
       display: none;
       margin-top: 16px;
       padding: 14px;
-      background: var(--tg-theme-bg-color, #fff);
+      background: rgba(0,191,255,0.04);
       border-radius: 12px;
-      border: 1px solid rgba(0,0,0,0.07);
-      font-size: 14px;
-      line-height: 1.6;
+      border: 1px solid rgba(0,191,255,0.1);
+      font-size: 13px;
+      line-height: 1.7;
       white-space: pre-wrap;
-      color: var(--tg-theme-text-color, #000);
+      color: #aaa;
     }
 
+    /* Лоадер */
     .loader {
       display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: #fff;
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(0,191,255,0.2);
+      border-top-color: #00bfff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       vertical-align: middle;
@@ -158,52 +357,98 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Неоновая линия снизу кнопки */
+    .neon-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #fcfcfc, #9c9c9a);
+      border-radius: 2px;
+      margin: 20px auto 0;
+      box-shadow: 0 0 8px rgba(0,191,255,0.5);
+    }
   </style>
 </head>
 <body>
 
-  <h1>🚗 Калькулятор авто</h1>
-  <p class="subtitle">Полная стоимость с таможней и доставкой</p>
-
-  <label for="model">Модель автомобиля</label>
-  <input type="text" id="model" placeholder="Например: Audi A5" autocomplete="off" />
-
-  <label for="price">Цена автомобиля (USD)</label>
-  <input type="number" id="price" placeholder="Например: 5000" min="1" />
-
-  <p class="error-msg" id="errorMsg"></p>
-
-  <button id="calcBtn" onclick="calculate()">Рассчитать</button>
-
-  <div class="result-card" id="resultCard">
-    <p class="result-title" id="resultTitle">Расчёт</p>
-
-    <div class="result-row">
-      <span class="label">💰 Цена авто</span>
-      <span class="value" id="rPrice">—</span>
+  <!-- ЗАСТАВКА -->
+  <div id="splash">
+    <img src="/webapp/splash.gif" alt="" class="splash-gif" />
+    <div class="splash-overlay"></div>
+    <div class="splash-content">
+      <div class="splash-title">Calc Bot</div>
+      <div class="splash-subtitle">Авто из Кореи</div>
+      <div class="splash-bar-wrap">
+        <div class="splash-bar"></div>
+      </div>
     </div>
-    <div class="result-row">
-      <span class="label">🛃 Таможня (15%)</span>
-      <span class="value" id="rCustoms">—</span>
-    </div>
-    <div class="result-row">
-      <span class="label">🚚 Логистика</span>
-      <span class="value" id="rLogistics">—</span>
-    </div>
-    <div class="result-row">
-      <span class="label">💼 Комиссия (5%)</span>
-      <span class="value" id="rCommission">—</span>
+  </div>
+
+  <!-- ПРИЛОЖЕНИЕ -->
+  <div id="app">
+
+    <div class="app-header">
+      <div class="app-header-icon">🚗</div>
+      <div class="app-header-text">
+        <h1>Калькулятор стоимости.</h1>
+        <p>Импорт · Таможня · Доставка</p>
+      </div>
     </div>
 
-    <div class="result-total">
-      <span>Итого</span>
-      <span class="value" id="rTotal">—</span>
+    <div class="card">
+      <label>Модель автомобиля</label>
+      <input type="text" id="model" placeholder="Например: Porsche 911" autocomplete="off" />
+
+      <label>Цена автомобиля (KRW)</label>
+      <input type="number" id="price" placeholder="Например: 15000" min="1" />
+
+      <p class="error-msg" id="errorMsg"></p>
+
+      <button id="calcBtn" onclick="calculate()">Рассчитать стоимость</button>
     </div>
 
-    <div class="ai-block" id="aiText"></div>
+    <div class="result-card" id="resultCard">
+      <p class="result-title" id="resultTitle">Расчёт</p>
+
+      <div class="result-row">
+        <span class="label">💰 Цена авто</span>
+        <span class="value" id="rPrice">—</span>
+      </div>
+      <div class="result-row">
+        <span class="label">🛃 Таможня (15%)</span>
+        <span class="value" id="rCustoms">—</span>
+      </div>
+      <div class="result-row">
+        <span class="label">🚚 Логистика</span>
+        <span class="value" id="rLogistics">—</span>
+      </div>
+      <div class="result-row">
+        <span class="label">💼 Комиссия (5%)</span>
+        <span class="value" id="rCommission">—</span>
+      </div>
+
+      <div class="result-total">
+        <span class="label-total">Итого</span>
+        <span class="value-total" id="rTotal">—</span>
+      </div>
+
+      <div class="ai-block" id="aiText"></div>
+      <div class="neon-divider"></div>
+    </div>
+
   </div>
 
   <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash');
+        const app = document.getElementById('app');
+        splash.classList.add('hidden');
+        app.classList.add('visible');
+        setTimeout(() => splash.remove(), 700);
+      }, 2800);
+    });
+
     function fmt(n) {
       return '$' + Number(n).toLocaleString('ru-RU', {
         minimumFractionDigits: 2,
@@ -239,8 +484,6 @@
       const btn = document.getElementById('calcBtn');
       btn.disabled = true;
       btn.innerHTML = '<span class="loader"></span>Считаем...';
-
-      // Скрываем старый AI текст пока считаем
       document.getElementById('aiText').style.display = 'none';
 
       try {
@@ -252,14 +495,9 @@
 
         if (!res.ok) throw new Error('Ошибка сервера');
         const data = await res.json();
+        if (data.error) { showError(data.error); return; }
 
-        if (data.error) {
-          showError(data.error);
-          return;
-        }
-
-        // Заполняем таблицу
-        document.getElementById('resultTitle').textContent = `Расчёт для ${model}`;
+        document.getElementById('resultTitle').textContent = `— ${model} —`;
         document.getElementById('rPrice').textContent = fmt(data.price);
         document.getElementById('rCustoms').textContent = fmt(data.customs);
         document.getElementById('rLogistics').textContent = fmt(data.logistics);
@@ -267,7 +505,6 @@
         document.getElementById('rTotal').textContent = fmt(data.total);
         document.getElementById('resultCard').style.display = 'block';
 
-        // Показываем AI текст если есть
         const aiBlock = document.getElementById('aiText');
         if (data.ai_text) {
           aiBlock.textContent = data.ai_text;
@@ -280,7 +517,7 @@
         showError('Не удалось получить расчёт. Попробуйте ещё раз.');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = 'Рассчитать';
+        btn.innerHTML = 'Рассчитать стоимость';
       }
     }
 
