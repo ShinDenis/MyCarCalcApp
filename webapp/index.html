@@ -374,8 +374,8 @@
     }
 
     .specialist-link {
-      display: block;
-      margin: 3px;
+      display: inline-block;
+      margin-top: 5px;
       color: #00bfff;
       text-decoration: none;
       font-weight: 600;
@@ -536,12 +536,13 @@
 
         const aiBlock = document.getElementById('aiText');
         if (data.ai_text) {
-          aiBlock.innerHTML = data.ai_text.replace(/\n/g, '<br>') + `
-            <a href="https://t.me/crazymixparty" target="_blank" class="specialist-link">
-              ✉️ Связаться со специалистом
-            </a>
-          `;
-          aiBlock.style.display = 'block';
+          aiBlock.innerHTML = `
+              <div class="ai-text">${data.ai_text.replace(/\n/g, '<br>')}</div>
+              <a href="https://t.me/crazymixparty" target="_blank" class="specialist-link">
+                ✉️ Связаться со специалистом.
+              </a>
+            `;
+            aiBlock.style.display = 'block';
         }
 
         document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
