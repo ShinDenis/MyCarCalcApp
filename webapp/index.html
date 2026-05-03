@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Калькулятор авто</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+    tg.requestFullscreen();
   </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -122,13 +124,14 @@
     /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
     #app {
       min-height: 100vh;
-      padding: 24px 16px calc(32px + env(safe-area-inset-bottom));
+      /* Отступ сверху учитывает шапку Telegram и notch */
+      padding: max(80px, env(safe-area-inset-top) + 60px) 16px calc(32px + env(safe-area-inset-bottom));
       opacity: 0;
       transition: opacity 0.5s ease;
       background:
-        radial-gradient(ellipse at top left, rgba(28, 31, 30, 1) 0%, transparent 60%),
-        radial-gradient(ellipse at bottom right, rgba(225, 235, 234, 0.07) 0%, transparent 60%),
-        #0A0A0A;
+        radial-gradient(ellipse at top left, rgba(28,31,30,1) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom right, rgba(225,235,234,0.07) 0%, transparent 60%),
+        #0a0a0a;
     }
 
     #app.visible { opacity: 1; }
@@ -152,8 +155,8 @@
       justify-content: center;
       font-size: 22px;
       box-shadow:
-      0 0 20px rgba(0,191,255,0.1),
-      inset 0 1px 0 rgba(255,255,255,0.06);
+        0 0 20px rgba(0,191,255,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.06);
     }
 
     .app-header-text h1 {
@@ -281,7 +284,7 @@
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,191,255,0.4), rgba(123,47,255,0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(0,191,255,0.4), rgba(4, 52, 56, 0.4), transparent);
     }
 
     .result-title {
@@ -358,7 +361,6 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Неоновая линия снизу кнопки */
     .neon-divider {
       width: 60px;
       height: 2px;
@@ -399,7 +401,7 @@
       <label>Модель автомобиля</label>
       <input type="text" id="model" placeholder="Например: Porsche 911" autocomplete="off" />
 
-      <label>Цена автомобиля (KRW)</label>
+      <label>Цена автомобиля (USD)</label>
       <input type="number" id="price" placeholder="Например: 15000" min="1" />
 
       <p class="error-msg" id="errorMsg"></p>
@@ -439,6 +441,15 @@
   </div>
 
   <script>
+    // Динамически подстраиваем отступ под высоту шапки Telegram
+    tg.onEvent('viewportChanged', () => {
+      const app = document.getElementById('app');
+      const topInset = tg.safeAreaInsets ? tg.safeAreaInsets.top : 0;
+      const contentTop = tg.contentSafeAreaInsets ? tg.contentSafeAreaInsets.top : 0;
+      const topPad = Math.max(80, topInset + contentTop + 16);
+      app.style.paddingTop = topPad + 'px';
+    });
+
     window.addEventListener('load', () => {
       setTimeout(() => {
         const splash = document.getElementById('splash');
