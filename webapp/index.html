@@ -5,29 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Калькулятор авто</title>
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    const tg = window.Telegram?.WebApp;
+    const tg = window.Telegram.WebApp;
+    tg.ready();
 
-    if (tg) {
-      tg.ready();
-
-      if (tg.platform === 'android' || tg.platform === 'ios') {
-        tg.expand();
-      }
+    if (tg.platform === 'android' || tg.platform === 'ios') {
+    tg.expand();
     }
+
   </script>
-
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html,
-    body {
+    html, body {
       height: 100%;
       min-height: 100vh;
       min-height: -webkit-fill-available;
@@ -40,7 +31,7 @@
       color: #e0e0e0;
     }
 
-    /* ===== SPLASH ===== */
+    /* ===== ЗАСТАВКА ===== */
     #splash {
       position: fixed;
       inset: 0;
@@ -65,6 +56,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
     }
 
     .splash-overlay {
@@ -73,8 +65,8 @@
       background: linear-gradient(
         to bottom,
         transparent 20%,
-        rgba(0, 0, 0, 0.4) 60%,
-        rgba(0, 0, 0, 0.92) 100%
+        rgba(0,0,0,0.4) 60%,
+        rgba(0,0,0,0.92) 100%
       );
     }
 
@@ -90,21 +82,23 @@
       font-size: 30px;
       font-weight: 700;
       color: #fff;
-      text-shadow: 0 0 20px rgba(100, 200, 255, 0.6);
+      letter-spacing: 1px;
+      text-shadow: 0 0 20px rgba(100,200,255,0.6);
+      margin-bottom: 6px;
     }
 
     .splash-subtitle {
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255,255,255,0.5);
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin: 6px 0 28px;
+      margin-bottom: 28px;
     }
 
     .splash-bar-wrap {
       width: 140px;
       height: 2px;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255,255,255,0.15);
       border-radius: 4px;
       overflow: hidden;
       margin: 0 auto;
@@ -114,151 +108,457 @@
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, #ffffff, #feffc9);
+      border-radius: 4px;
       animation: loadBar 2s ease 0.5s forwards;
+      box-shadow: 0 0 8px #ffffff;
     }
 
     @keyframes loadBar {
-      to {
-        width: 100%;
-      }
+      0%   { width: 0%; }
+      70%  { width: 80%; }
+      100% { width: 100%; }
     }
 
     @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(24px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ===== APP ===== */
+    /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
     #app {
       min-height: 100vh;
-      padding: max(80px, env(safe-area-inset-top) + 60px) 16px
-        calc(32px + env(safe-area-inset-bottom));
+      /* Отступ сверху учитывает шапку Telegram и notch */
+      padding: max(80px, env(safe-area-inset-top) + 60px) 16px calc(32px + env(safe-area-inset-bottom));
       opacity: 0;
       transition: opacity 0.5s ease;
+      background:
+        radial-gradient(ellipse at top left, rgba(28,31,30,1) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom right, rgba(225,235,234,0.07) 0%, transparent 60%),
+        #0a0a0a;
     }
 
-    #app.visible {
-      opacity: 1;
+    #app.visible { opacity: 1; }
+
+    /* Шапка */
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
     }
 
-    .card,
-    .result-card {
-      background: #111;
-      border-radius: 16px;
+    .app-header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #142224 70%, #031314 100%);
+      border: 1px solid rgba(0,191,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow:
+        0 0 20px rgba(0,191,255,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .app-header-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .app-header-text p {
+      font-size: 12px;
+      color: #555;
+      letter-spacing: 0.5px;
+    }
+
+    /* Карточка формы */
+    .card {
+      background: linear-gradient(145deg, #121212, #111617);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
       padding: 20px;
       margin-bottom: 16px;
+      box-shadow:
+        0 4px 24px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #c7c7c7;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
     input {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border-radius: 10px;
-      border: 1px solid #333;
-      background: #1a1a1a;
-      color: #fff;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
+      padding: 13px 16px;
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 12px;
-      background: #0b2c30;
-      color: #fff;
-      cursor: pointer;
+      font-size: 15px;
+      background: rgba(255,255,255,0.04);
+      color: #e0e0e0;
+      margin-bottom: 18px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      caret-color: #00bfff;
     }
 
+    input::placeholder { color: #444; }
+
+    input:focus {
+      border-color: rgba(0,191,255,0.4);
+      box-shadow: 0 0 0 3px rgba(0,191,255,0.08), 0 0 16px rgba(0,191,255,0.1);
+    }
+
+    input:last-of-type { margin-bottom: 0; }
+
+    /* Кнопка */
+    button#calcBtn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #13191a 0%, #142224 70%, #031314 100%);
+      color: #e0e0e0;
+      border: 1px solid rgba(0,191,255,0.3);
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      box-shadow:
+        0 0 20px rgba(0,191,255,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    button#calcBtn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,191,255,0.6), transparent);
+    }
+
+    button#calcBtn:active {
+      transform: scale(0.98);
+      box-shadow: 0 0 30px rgba(0,191,255,0.2);
+    }
+
+    button#calcBtn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Ошибка */
+    .error-msg {
+      color: #ff4466;
+      font-size: 12px;
+      margin-top: 10px;
+      display: none;
+      text-shadow: 0 0 8px rgba(255,68,102,0.4);
+    }
+
+    /* Карточка результата */
+    .result-card {
+      background: linear-gradient(145deg, #111118, #0d0d15);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 20px;
+      display: none;
+      box-shadow:
+        0 4px 24px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,191,255,0.4), rgba(4, 52, 56, 0.4), transparent);
+    }
+
+    .result-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .result-row:last-of-type { border-bottom: none; }
+
+    .result-row .label { color: #555; }
+
+    .result-row .value {
+      font-weight: 500;
+      color: #ccc;
+    }
+
+    .result-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0 2px;
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .result-total .label-total { color: #888; }
+
+    .result-total .value-total {
+      color: #00bfff;
+      text-shadow: 0 0 16px rgba(0,191,255,0.5);
+    }
+
+    /* AI блок */
     .ai-block {
       display: none;
       margin-top: 16px;
+      padding: 14px;
+      background: rgba(0,191,255,0.04);
+      border-radius: 12px;
+      border: 1px solid rgba(0,191,255,0.1);
       font-size: 13px;
-      line-height: 1.6;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      color: #aaa;
+    }
+
+    /* Лоадер */
+    .loader {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(0,191,255,0.2);
+      border-top-color: #00bfff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .neon-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #fcfcfc, #9c9c9a);
+      border-radius: 2px;
+      margin: 20px auto 0;
+      box-shadow: 0 0 8px rgba(0,191,255,0.5);
     }
 
     .specialist-link {
       display: block;
-      margin-top: 6px;
+      margin: 3px;
       color: #00bfff;
       text-decoration: none;
+      font-weight: 600;
+      text-shadow: 0 0 8px rgba(0,191,255,0.4);
+      text-align: center;
     }
+
+    .specialist-link:active {
+      opacity: 0.7;
+    }
+
   </style>
 </head>
-
 <body>
-  <div id="splash">
-    <img src="/webapp/splash.gif" class="splash-gif" />
-    <div class="splash-overlay"></div>
 
+  <!-- ЗАСТАВКА -->
+  <div id="splash">
+    <img src="/webapp/splash.gif" alt="" class="splash-gif" />
+    <div class="splash-overlay"></div>
     <div class="splash-content">
       <div class="splash-title">Calc Bot</div>
       <div class="splash-subtitle">Авто из Кореи</div>
-
       <div class="splash-bar-wrap">
         <div class="splash-bar"></div>
       </div>
     </div>
   </div>
 
+  <!-- ПРИЛОЖЕНИЕ -->
   <div id="app">
-    <div class="card">
-      <input id="model" placeholder="Модель" />
-      <input id="price" type="number" placeholder="Цена" />
 
-      <button onclick="calculate()">Рассчитать</button>
+    <div class="app-header">
+      <div class="app-header-icon">🚗</div>
+      <div class="app-header-text">
+        <h1>Калькулятор стоимости.</h1>
+        <p>Импорт · Таможня · Доставка</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>Модель автомобиля</label>
+      <input type="text" id="model" placeholder="Например: Porsche 911" autocomplete="off" />
+
+      <label>Цена автомобиля (USD)</label>
+      <input type="number" id="price" placeholder="Например: 15000" min="1" />
+
+      <p class="error-msg" id="errorMsg"></p>
+
+      <button id="calcBtn" onclick="calculate()">Рассчитать стоимость</button>
     </div>
 
     <div class="result-card" id="resultCard">
-      <div id="aiText" class="ai-block"></div>
+      <p class="result-title" id="resultTitle">Расчёт</p>
+
+      <div class="result-row">
+        <span class="label">💰 Цена авто</span>
+        <span class="value" id="rPrice">—</span>
+      </div>
+      <div class="result-row">
+        <span class="label">🛃 Таможня (15%)</span>
+        <span class="value" id="rCustoms">—</span>
+      </div>
+      <div class="result-row">
+        <span class="label">🚚 Логистика</span>
+        <span class="value" id="rLogistics">—</span>
+      </div>
+      <div class="result-row">
+        <span class="label">💼 Комиссия (5%)</span>
+        <span class="value" id="rCommission">—</span>
+      </div>
+
+      <div class="result-total">
+        <span class="label-total">Итого</span>
+        <span class="value-total" id="rTotal">—</span>
+      </div>
+
+      <div class="ai-block" id="aiText"></div>
+      <div class="neon-divider"></div>
     </div>
+
   </div>
 
   <script>
-    function fmt(n) {
-      return '$' + Number(n).toLocaleString('ru-RU');
-    }
-
-    async function calculate() {
-      const model = document.getElementById('model').value.trim();
-      const price = parseFloat(document.getElementById('price').value);
-
-      if (!model || !price) return;
-
-      const res = await fetch('/calc-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, price })
-      });
-
-      const data = await res.json();
-
-      const aiBlock = document.getElementById('aiText');
-
-      if (data.ai_text) {
-        aiBlock.innerHTML = `
-          <div>${data.ai_text.replace(/\n/g, '<br>')}</div>
-          <a href="https://t.me/crazymixparty" target="_blank" class="specialist-link">
-            ✉️ Связаться со специалистом
-          </a>
-        `;
-
-        aiBlock.style.display = 'block';
-      }
-
-      document.getElementById('resultCard').style.display = 'block';
-    }
+    // Динамически подстраиваем отступ под высоту шапки Telegram
+    tg.onEvent('viewportChanged', () => {
+      const app = document.getElementById('app');
+      const topInset = tg.safeAreaInsets ? tg.safeAreaInsets.top : 0;
+      const contentTop = tg.contentSafeAreaInsets ? tg.contentSafeAreaInsets.top : 0;
+      const topPad = Math.max(80, topInset + contentTop + 16);
+      app.style.paddingTop = topPad + 'px';
+    });
 
     window.addEventListener('load', () => {
       setTimeout(() => {
-        document.getElementById('splash').remove();
-        document.getElementById('app').classList.add('visible');
-      }, 2000);
+        const splash = document.getElementById('splash');
+        const app = document.getElementById('app');
+        splash.classList.add('hidden');
+        app.classList.add('visible');
+        setTimeout(() => splash.remove(), 700);
+      }, 2800);
+    });
+
+    function fmt(n) {
+      return '$' + Number(n).toLocaleString('ru-RU', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMsg').style.display = 'none';
+    }
+
+    async function calculate() {
+      hideError();
+
+      const model = document.getElementById('model').value.trim();
+      const priceRaw = document.getElementById('price').value.trim();
+
+      if (!model) { showError('Введите модель автомобиля'); return; }
+      if (!priceRaw) { showError('Введите цену'); return; }
+
+      const price = parseFloat(priceRaw);
+      if (isNaN(price) || price <= 0) {
+        showError('Цена должна быть положительным числом');
+        return;
+      }
+
+      const btn = document.getElementById('calcBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loader"></span>Считаем...';
+      document.getElementById('aiText').style.display = 'none';
+
+      try {
+        const res = await fetch('/calc-ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model, price })
+        });
+
+        if (!res.ok) throw new Error('Ошибка сервера');
+        const data = await res.json();
+        if (data.error) { showError(data.error); return; }
+
+        document.getElementById('resultTitle').textContent = `— ${model} —`;
+        document.getElementById('rPrice').textContent = fmt(data.price);
+        document.getElementById('rCustoms').textContent = fmt(data.customs);
+        document.getElementById('rLogistics').textContent = fmt(data.logistics);
+        document.getElementById('rCommission').textContent = fmt(data.commission);
+        document.getElementById('rTotal').textContent = fmt(data.total);
+        document.getElementById('resultCard').style.display = 'block';
+
+        const aiBlock = document.getElementById('aiText');
+        if (data.ai_text) {
+          aiBlock.innerHTML = data.ai_text.replace(/\n/g, '<br>') + `
+            <br><br>
+            <a href="https://t.me/crazymixparty" target="_blank" class="specialist-link">
+              ✉️ Связаться со специалистом
+            </a>
+          `;
+          aiBlock.style.display = 'block';
+        }
+
+        document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+
+      } catch (e) {
+        showError('Не удалось получить расчёт. Попробуйте ещё раз.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Рассчитать стоимость';
+      }
+    }
+
+    document.getElementById('price').addEventListener('keydown', e => {
+      if (e.key === 'Enter') calculate();
     });
   </script>
+
 </body>
 </html>
