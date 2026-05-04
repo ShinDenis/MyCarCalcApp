@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import uvicorn
 import httpx
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import (
@@ -14,6 +15,9 @@ from aiogram.types import (
     CallbackQuery, WebAppInfo
 )
 from google import genai
+
+# --- Загрузка .env (локально) ---
+load_dotenv()
 
 # --- Логирование ---
 logging.basicConfig(
@@ -27,6 +31,7 @@ API_TOKEN = os.environ.get("API_TOKEN")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:8000")
 WEBAPP_URL = f"{RENDER_EXTERNAL_URL}/webapp/"
+SPECIALIST_URL = "https://t.me/crazymixparty"
 
 if not API_TOKEN:
     raise RuntimeError("Переменная окружения API_TOKEN не задана!")
@@ -173,7 +178,6 @@ async def api_calc_ai(req: CalcRequest):
 
     customs, logistics, commission, total = calc_total(req.price)
 
-
     prompt = (
         f"Пользователь хочет купить автомобиль: {req.model}, итоговая стоимость {total:.2f} USD.\n\n"
         f"Напиши короткий (2-3 предложения) дружелюбный комментарий на русском языке с эмодзи. "
@@ -208,7 +212,6 @@ async def api_calc_ai(req: CalcRequest):
             logger.warning(f"Gemini недоступен: {e}")
             break
 
-    # Fallback без AI
     return {
         "price": round(req.price, 2),
         "customs": round(customs, 2),
@@ -218,14 +221,13 @@ async def api_calc_ai(req: CalcRequest):
         "ai_text": None
     }
 
-# Статика — папка webapp
+# Статика
 app.mount("/webapp", StaticFiles(directory="webapp", html=True), name="webapp")
 
 def run_api():
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
 
-# --- Запуск бота ---
 async def run_bot():
     await set_commands(bot)
     asyncio.create_task(keep_alive())
