@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 import logging
 from google import genai
 
+import bot
+
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
@@ -108,6 +110,13 @@ async def api_calc_ai(req: CalcRequest):
 # --- Раздача статичных файлов ---
 app.mount("/webapp", StaticFiles(directory="webapp", html=True), name="webapp")
 
+
+async def start_bot():
+    # вызываем main() из bot.py
+    await bot.main()
+
 if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.create_task(start_bot())  # запускаем бота параллельно
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=port)
