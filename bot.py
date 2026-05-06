@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # --- Настройки ---
 API_TOKEN = os.environ.get("API_TOKEN")
 RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:8000")
-WEBAPP_URL = os.environ.get("WEBAPP_URL")
+WEBAPP_URL = f"{RENDER_EXTERNAL_URL}/webapp/"
 SPECIALIST_URL = "https://t.me/crazymixparty"
 
 if not API_TOKEN:
