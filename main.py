@@ -36,6 +36,11 @@ def calc_total(price: float):
 # --- FastAPI приложение ---
 app = FastAPI()
 
+@app.on_event("startup")
+async def on_startup():
+    asyncio.create_task(start_bot())
+    logger.info("🤖 Бот запущен внутри FastAPI")
+
 class CalcRequest(BaseModel):
     model: str
     price: float
@@ -116,7 +121,5 @@ async def start_bot():
     await bot.main()
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.create_task(start_bot())  # запускаем бота параллельно
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
