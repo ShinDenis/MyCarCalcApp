@@ -3,7 +3,7 @@
 Telegram бот с Mini App для расчёта полной стоимости автомобиля с учётом таможни, логистики и комиссии, с подключенной моделью Gemini для живых ответов.
 
 
-## Web Запуск - [🚀 Live Demo](https://mycarcalcapp-us.onrender.com)
+## Web Запуск - [🚀 Live Demo](https://mycarcalcapp-us.onrender.com/web)
 
 ## Структура проекта
 
