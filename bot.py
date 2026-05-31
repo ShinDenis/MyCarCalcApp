@@ -167,7 +167,7 @@ async def main():
     logger.info(f"📍 URL: {RENDER_EXTERNAL_URL}")
     logger.info(f"🔗 WEBAPP_URL: {WEBAPP_URL or '❌ Не установлена'}")
     await set_commands(bot)
-    asyncio.create_task(keep_alive())
+    # asyncio.create_task(keep_alive())
 
     try:
         await dp.start_polling(bot, drop_pending_updates=True)
